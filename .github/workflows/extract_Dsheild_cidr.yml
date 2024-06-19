@@ -4,6 +4,7 @@ on:
   schedule:
     # Run the job daily at 00:00 UTC
     - cron: '0 0 * * *'
+  workflow_dispatch: # Allows manual triggering
 
 jobs:
   extract_cidr:
