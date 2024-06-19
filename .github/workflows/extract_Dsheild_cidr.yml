@@ -42,7 +42,7 @@ jobs:
         # Function to extract CIDR notations from the list
         extract_cidr() {
             local_file="$1"
-            output_file="cidr_list.txt"
+            output_file="Processed_SANS_Dsheild_block_list.txt"
             > $output_file
 
             # Loop through each line of the input file
