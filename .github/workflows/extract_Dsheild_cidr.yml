@@ -1,4 +1,4 @@
-name: Extract CIDR Notations
+name: Extract SANS Dsheild CIDR Notations
 
 on:
   schedule:
