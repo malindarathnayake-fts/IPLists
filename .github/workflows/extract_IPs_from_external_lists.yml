@@ -15,7 +15,8 @@ jobs:
     - name: Install curl
       run: sudo apt-get install -y curl
 
-    - name: Run bash script
+    # First task: Extract SANS DShield CIDR Notations
+    - name: extract SANS Dshield CIDR
       run: |
         #!/bin/bash
 
@@ -67,7 +68,15 @@ jobs:
             echo "Failed to download the list. Exiting."
             exit 1
         fi
-
+        
+    # Second task: Extract GitHub Package IP ranges and save to Github_package_ips.txt
+    - name: Extract GitHub Packages IPs
+      run: |
+        # Fetch the GitHub meta data and extract packages IP range
+        curl -s https://api.github.com/meta > github_meta.json
+        cat github_meta.json | jq '.packages[]' > Github_package_ips.txt
+        echo "GitHub Packages IPs saved to Github_package_ips.txt"
+        
     - name: Commit the resulting file
       run: |
         git config --global user.name 'GitHub Actions'
