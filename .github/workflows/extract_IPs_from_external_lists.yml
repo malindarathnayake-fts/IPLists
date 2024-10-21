@@ -74,7 +74,7 @@ jobs:
       run: |
         # Fetch the GitHub meta data and extract packages IP range
         curl -s https://api.github.com/meta > github_meta.json
-        cat github_meta.json | jq '.packages[]' > Github_package_ips.txt
+        cat github_meta.json | jq -r '.packages[]' > Github_package_ips.txt
         echo "GitHub Packages IPs saved to Github_package_ips.txt"
         
     - name: Commit the resulting file
