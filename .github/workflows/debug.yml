@@ -1,0 +1,36 @@
+name: Debug Update Shodan IP List
+
+on:
+  workflow_dispatch:
+
+jobs:
+  update_ip_list:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install DNS Utilities
+        run: sudo apt-get update && sudo apt-get install -y dnsutils
+
+      - name: Debug: Show System Info
+        run: |
+          echo "Running on:"
+          uname -a
+          echo "DNS Utilities Version:"
+          dig -v || echo "dig not installed"
+          echo "Curl Version:"
+          curl --version
+
+      - name: Debug: Run DNS Resolution Script
+        run: |
+          bash << 'EOF'
+          set -x
+          # Include the script here or call an external script
+          # Example: ./scripts/update_dns_list.sh
+          DNS_URL="https://raw.githubusercontent.com/malindarathnayake-fts/IPLists/main/Shodan_Known_DNS"
+          IP_LIST_FILE="Shodan_IPlist"
+          curl -s "$DNS_URL" -o dns_entries.txt
+          cat dns_entries.txt
+          EOF
