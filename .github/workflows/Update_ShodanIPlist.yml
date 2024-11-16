@@ -34,15 +34,18 @@ jobs:
             exit 1
           fi
 
+          # Clear previous IP list before adding new entries
+          > resolved_ips.txt
+
           # Resolve DNS entries to IPs
-          > resolved_ips.txt # Clear the file before adding new entries
+          echo "Resolving DNS entries..."
           while read -r dns; do
             if [[ -n "$dns" ]]; then
               ips=$(dig +short "$dns" | grep -Eo '([0-9]{1,3}\.){3}[0-9]{1,3}')
               if [[ -n "$ips" ]]; then
                 echo "$ips" >> resolved_ips.txt
               else
-                echo "Warning: Unable to resolve $dns"
+                echo "Warning: Unable to resolve $dns" >&2
               fi
             fi
           done < dns_entries.txt
@@ -53,12 +56,12 @@ jobs:
           # Update the IP list in the repository
           touch "$IP_LIST_FILE"
           mv resolved_ips.txt "$IP_LIST_FILE"
-
+          
       # Commit and push changes
       - name: Commit and Push Changes
         run: |
           git config --global user.name "GitHub Actions Bot"
           git config --global user.email "actions@github.com"
-          git add $IP_LIST_FILE
+          git add Shodan_IPlist
           git commit -m "Updated Shodan IP List from DNS entries"
           git push
