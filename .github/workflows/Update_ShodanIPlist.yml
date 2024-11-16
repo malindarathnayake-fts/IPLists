@@ -14,7 +14,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # Resolve DNS entries and update IP list
+      # Install DNS utilities
+      - name: Install DNS Utilities
+        run: sudo apt-get update && sudo apt-get install -y dnsutils
+
+      # Resolve DNS Entries and Update IP List
       - name: Resolve DNS Entries and Update IP List
         run: |
           # Set the URLs for DNS and IP list files
@@ -22,15 +26,23 @@ jobs:
           IP_LIST_FILE="Shodan_IPlist"
 
           # Download the DNS file
-          curl -s $DNS_URL -o dns_entries.txt
+          curl -s "$DNS_URL" -o dns_entries.txt
+
+          # Check if DNS entries file is empty
+          if [[ ! -s dns_entries.txt ]]; then
+            echo "Error: DNS entries file is empty or not found."
+            exit 1
+          fi
 
           # Resolve DNS entries to IPs
           > resolved_ips.txt # Clear the file before adding new entries
           while read -r dns; do
             if [[ -n "$dns" ]]; then
-              ips=$(dig +short $dns | grep -Eo '([0-9]{1,3}\.){3}[0-9]{1,3}')
+              ips=$(dig +short "$dns" | grep -Eo '([0-9]{1,3}\.){3}[0-9]{1,3}')
               if [[ -n "$ips" ]]; then
                 echo "$ips" >> resolved_ips.txt
+              else
+                echo "Warning: Unable to resolve $dns"
               fi
             fi
           done < dns_entries.txt
@@ -39,7 +51,8 @@ jobs:
           sort -u resolved_ips.txt -o resolved_ips.txt
 
           # Update the IP list in the repository
-          mv resolved_ips.txt $IP_LIST_FILE
+          touch "$IP_LIST_FILE"
+          mv resolved_ips.txt "$IP_LIST_FILE"
 
       # Commit and push changes
       - name: Commit and Push Changes
