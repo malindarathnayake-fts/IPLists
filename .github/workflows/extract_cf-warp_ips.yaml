@@ -1,0 +1,27 @@
+name: Extract IPv4 from FQDNs
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # Runs daily at midnight UTC
+
+jobs:
+  extract-ips:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      - name: Extract IPv4 addresses from FQDNs
+        run: |
+          # Query the IPv4 (A record) for each domain and save to file
+          dig +short region1.v2.argotunnel.com A > cloudflarewarp_ips
+          dig +short region2.v2.argotunnel.com A >> cloudflarewarp_ips
+          echo "Extracted cloudflarewarp IPv4 addresses:"
+          cat cloudflarewarp_ips
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: cloudflarewarp_ips
+          path: cloudflarewarp_ips
