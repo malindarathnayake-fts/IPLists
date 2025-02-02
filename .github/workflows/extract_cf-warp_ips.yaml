@@ -1,4 +1,4 @@
-name: Extract IPv4 from FQDNs
+name: Extract cloudflarewarp IPv4 from FQDNs
 
 on:
   schedule:
